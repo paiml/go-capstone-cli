@@ -1,0 +1,59 @@
+metadata:
+  version: "1.0.0"
+  author: "paiml"
+  description: "tally contracts: argument validation, exit codes and config precedence"
+  kind: pattern
+  crate: "go-capstone-cli"
+  references:
+    - "The Go Programming Language Specification"
+
+equations:
+  sum_additive:
+    formula: "Sum(xs ++ ys) = Sum(xs) + Sum(ys)"
+    domain: "xs, ys ∈ []int, both non-empty"
+    invariants:
+      - "a non-numeric argument yields exit code 1 and no output"
+  precedence_total:
+    formula: "Resolve(k) = first non-empty of flag, env, file[k], default"
+    domain: "k ∈ string"
+    invariants:
+      - "the reported source names the layer the value came from"
+  usage_exit_two:
+    formula: "wrong argument count ⇒ exit code 2"
+    domain: "args ∈ []string"
+    invariants:
+      - "usage errors never print to stdout"
+
+proof_obligations:
+  - type: invariant
+    property: "Resolve returns exactly one of flag, env, file, default as its source"
+    formal: "src ∈ {flag, env, file, default}"
+    applies_to: all
+  - type: invariant
+    property: "Usage errors exit 2 and runtime errors exit 1"
+    formal: "code ∈ {0, 1, 2}"
+    applies_to: all
+
+falsification_tests:
+  - id: FALSIFY-TALLY-001
+    rule: "sum rejects non-numbers"
+    test: "TestRun/sum_bad"
+    prediction: "exit 1 and a message naming the bad argument"
+    if_fails: "Contract violation — bad input accepted"
+  - id: FALSIFY-TALLY-002
+    rule: "precedence order"
+    test: "TestResolvePrecedence"
+    prediction: "flag beats env beats file beats default"
+    if_fails: "Contract violation — wrong layer wins"
+  - id: FALSIFY-TALLY-003
+    rule: "usage errors exit 2"
+    test: "TestRun/sum_none"
+    prediction: "exit 2 with usage message on stderr"
+    if_fails: "Contract violation — usage error mistaken for runtime error"
+
+qa_gate:
+  id: QA-TALLY
+  name: "tally contracts"
+  min_coverage: 0.90
+  max_complexity: 20
+  required_tests: ["TestRun"]

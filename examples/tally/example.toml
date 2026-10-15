@@ -1,0 +1,12 @@
+[example]
+title = "tally"
+summary = "sum, count and version: the capstone command tree"
+run = "go run ./cmd/tally sum 1 2 39"
+
+[[files]]
+path = "../../cli/cli.go"
+note = "the command tree"
+
+[[files]]
+path = "../../version/version.go"
+note = "linker-stamped version"

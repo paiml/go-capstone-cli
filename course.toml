@@ -1,0 +1,12 @@
+[course]
+slug = "go-capstone-cli"
+number = 5
+title = "Capstone: Ship a Go CLI"
+tagline = "Extend the Cobra tool with logging, version stamps and a built-binary test."
+description = "Tested Go code for the fifth course of the Go specialization: the tally CLI with a command tree, structured logging, linker-stamped versions and an end-to-end test of the built binary."
+prerequisites = ["Go 1.21 or newer", "Course 2: Building CLIs with Cobra"]
+
+[[examples]]
+dir = "examples/tally"
+title = "tally"
+summary = "sum, count and version: the capstone command tree"
